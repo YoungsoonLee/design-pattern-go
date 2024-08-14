@@ -1,6 +1,29 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
+
+var repo Repository
+
+// Models is the type that holds all of the models
+type Models struct {
+	DogBreed DogBreed
+}
+
+// New creates a new instance of the Models type
+func New(conn *sql.DB) *Models {
+	if conn == nil {
+		repo = NewTestRepository(nil)
+	}
+
+	repo = NewMysqlRepository(conn)
+
+	return &Models{
+		DogBreed: DogBreed{},
+	}
+}
 
 // DogBreed is a struct that represents a dog breed
 type DogBreed struct {
@@ -13,6 +36,11 @@ type DogBreed struct {
 	Details          string `json:"details"`
 	AlternateNames   string `json:"alternate_names"`
 	GeographicOrigin string `json:"geographic_origin"`
+}
+
+// All returns all dog breeds
+func (d *DogBreed) All() ([]*DogBreed, error) {
+	return repo.AllDogBreeds()
 }
 
 // CatBreed is a struct that represents a cat breed

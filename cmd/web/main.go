@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"text/template"
 	"time"
+
+	"github.com/YoungsoonLee/design-pattern-go/config"
 )
 
 const port = ":4000"
@@ -14,10 +16,12 @@ const port = ":4000"
 type application struct {
 	templateMap map[string]*template.Template
 	config      appConfig
+	App         *config.AppConfig
 }
 
 type appConfig struct {
 	useCache bool
+	dsn      string
 }
 
 func main() {
@@ -26,7 +30,16 @@ func main() {
 	}
 
 	flag.BoolVar(&app.config.useCache, "cache", false, "Use a template cache")
+	flag.StringVar(&app.config.dsn, "dsn", "mariadb:mypassword@tcp(localhost:3306)/breeders?parseTime=true&tls=false&collation=utf8_unicode_ci&timeout=5s", "MySQL data source name")
 	flag.Parse()
+
+	// get a connection to the database
+	db, err := initMySQL(app.config.dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	app.App = config.New(db)
 
 	srv := &http.Server{
 		Addr:              port,
@@ -39,7 +52,7 @@ func main() {
 
 	fmt.Println("Starting server on port", port)
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
