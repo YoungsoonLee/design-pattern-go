@@ -103,7 +103,7 @@ func (app *application) CreateCatWithBuilder(w http.ResponseWriter, r *http.Requ
 		SetBreed("Siamese").
 		SetWeight(10).
 		SetLifeSpan(15).
-		SetDescription("A friendly, loyal cat").
+		SetDescription("A friendly, loyal  cat").
 		SetColor("White").
 		SetAge(3).
 		SetAgeEstimated(true).
@@ -115,4 +115,16 @@ func (app *application) CreateCatWithBuilder(w http.ResponseWriter, r *http.Requ
 	}
 
 	_ = t.WriteJSON(w, http.StatusOK, p)
+}
+
+func (app *application) GetAllCatBreeds(w http.ResponseWriter, r *http.Request) {
+	var t toolbox.Tools
+
+	catBreeds, err := app.catService.GetAllCatBreeds()
+	if err != nil {
+		_ = t.WriteJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	_ = t.WriteJSON(w, http.StatusOK, catBreeds)
 }
