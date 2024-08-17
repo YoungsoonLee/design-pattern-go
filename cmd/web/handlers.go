@@ -120,11 +120,23 @@ func (app *application) CreateCatWithBuilder(w http.ResponseWriter, r *http.Requ
 func (app *application) GetAllCatBreeds(w http.ResponseWriter, r *http.Request) {
 	var t toolbox.Tools
 
-	catBreeds, err := app.catService.GetAllCatBreeds()
+	catBreeds, err := app.App.CatService.GetAllCatBreeds()
 	if err != nil {
 		_ = t.WriteJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
 	_ = t.WriteJSON(w, http.StatusOK, catBreeds)
+}
+
+func (app *application) AnimalFromAbstractFactory(w http.ResponseWriter, r *http.Request) {
+	// var t toolbox.Tools
+
+	// Get species from URL itself.
+
+	// Get breed from URL itself.
+
+	// Create a pet from the abstract factory
+
+	// Return the pet as JSON
 }

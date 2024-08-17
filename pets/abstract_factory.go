@@ -3,6 +3,7 @@ package pets
 import (
 	"fmt"
 
+	"github.com/YoungsoonLee/design-pattern-go/config"
 	"github.com/YoungsoonLee/design-pattern-go/models"
 )
 
@@ -34,6 +35,7 @@ func (c *CatFromFactory) Show() string {
 // PetFactoryInterface is an interface that defines the newPet method
 type PetFactoryInterface interface {
 	newPet() AnimalInterface
+	newPetWithBreed(breed string) AnimalInterface
 }
 
 // DogAbstarctFactory is a struct that represents a dog abstract factory
@@ -45,12 +47,30 @@ func (d *DogAbstarctFactory) newPet() AnimalInterface {
 	}
 }
 
+func (d *DogAbstarctFactory) newPetWithBreed(b string) AnimalInterface {
+	app := config.GetInstance()
+	breed, _ := app.Models.DogBreed.GetBreedByName(b)
+	return &DogFromFactory{
+		Pet: &models.Dog{
+			Breed: *breed,
+		},
+	}
+}
+
 // CatAbstarctFactory is a struct that represents a cat abstract factory
 type CatAbstarctFactory struct{}
 
 func (c *CatAbstarctFactory) newPet() AnimalInterface {
 	return &CatFromFactory{
 		Pet: &models.Cat{},
+	}
+}
+
+func (c *CatAbstarctFactory) newPetWithBreed(b string) AnimalInterface {
+	return &CatFromFactory{
+		Pet: &models.Cat{
+			// Breed: b,
+		},
 	}
 }
 
@@ -68,4 +88,20 @@ func NewPetFromAbstractFactory(species string) (AnimalInterface, error) {
 	}
 
 	return factory.newPet(), nil
+}
+
+// NewPetWithBreedFromAbstractFactory is a function that returns a new pet with a breed from the factory
+func NewPetWithBreedFromAbstractFactory(species, breed string) (AnimalInterface, error) {
+	switch species {
+	case "dog":
+		var dogFactory DogAbstarctFactory
+		dog := dogFactory.newPetWithBreed(breed)
+		return dog, nil
+	case "cat":
+		var catFactory CatAbstarctFactory
+		cat := catFactory.newPetWithBreed(breed)
+		return cat, nil
+	default:
+		return nil, fmt.Errorf("invalid species")
+	}
 }

@@ -5,6 +5,7 @@ import "database/sql"
 // Repository is the interface that wraps the basic methods for a repository
 type Repository interface {
 	AllDogBreeds() ([]*DogBreed, error)
+	GetBreedByName(string) (*DogBreed, error)
 }
 
 type mysqlRepository struct {
