@@ -10,6 +10,7 @@ var repo Repository
 // Models is the type that holds all of the models
 type Models struct {
 	DogBreed DogBreed
+	Dog      Dog
 }
 
 // New creates a new instance of the Models type
@@ -115,4 +116,17 @@ type Pet struct {
 	MaxWeight   int    `json:"max_weight"`
 	Description string `json:"description"`
 	LifeSpan    int    `json:"life_span"`
+}
+
+// DogOfMonth is a struct that represents a dog of the month
+type DogOfMonth struct {
+	ID    int    `json:"id"`
+	Dog   *Dog   `json:"dog"` // Decorator pattern
+	Video string `json:"video"`
+	Image string `json:"image"`
+}
+
+// GetDogOfMonthByID returns a dog of the month by ID
+func (d *Dog) GetDogOfMonthByID(id int) (*DogOfMonth, error) {
+	return repo.GetDogOfMonthByID(id)
 }

@@ -67,9 +67,15 @@ func (c *CatAbstarctFactory) newPet() AnimalInterface {
 }
 
 func (c *CatAbstarctFactory) newPetWithBreed(b string) AnimalInterface {
+	app := config.GetInstance()
+	breed, err := app.CatService.Remote.GetCatBreedByName(b)
+	if err != nil {
+		return nil
+	}
+
 	return &CatFromFactory{
 		Pet: &models.Cat{
-			// Breed: b,
+			Breed: *breed,
 		},
 	}
 }
