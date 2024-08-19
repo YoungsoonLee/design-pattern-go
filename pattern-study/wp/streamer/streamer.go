@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path"
 	"strings"
+
+	"github.com/tsawler/toolbox"
 )
 
 // ProcessingMessage is a struct that represents a processing message
@@ -79,6 +81,18 @@ func (v *Video) encode() {
 
 		fileName = fmt.Sprintf("%s.mp4", name)
 
+	case "hls":
+		// encode the video
+		// fmt.Println("Encoding video to mp4", v.ID)
+
+		name, err := v.encodeToHLS()
+		if err != nil {
+			v.sendToNotifyChan(false, fileName, err.Error())
+			return
+		}
+
+		fileName = fmt.Sprintf("%s.m3u8", name)
+
 	default:
 		v.sendToNotifyChan(false, fileName, "Unknown encoding type")
 		return
@@ -94,10 +108,30 @@ func (v *Video) encodeToMP4() (string, error) {
 		b := path.Base(v.InputFile)
 		baseFileName = strings.TrimSuffix(b, path.Ext(b))
 	} else {
-		// TODO: Implement renaming
+		var t toolbox.Tools
+		baseFileName = t.RandomString(10)
 	}
 
 	err := v.Encoder.Engine.EncodeToMP4(v, baseFileName)
+	if err != nil {
+		return "", err
+	}
+
+	return baseFileName, nil
+}
+
+func (v *Video) encodeToHLS() (string, error) {
+	baseFileName := ""
+
+	if !v.Options.RenameOutput {
+		b := path.Base(v.InputFile)
+		baseFileName = strings.TrimSuffix(b, path.Ext(b))
+	} else {
+		var t toolbox.Tools
+		baseFileName = t.RandomString(10)
+	}
+
+	err := v.Encoder.Engine.EncodeToHLS(v, baseFileName)
 	if err != nil {
 		return "", err
 	}
