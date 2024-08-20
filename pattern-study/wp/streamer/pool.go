@@ -1,5 +1,7 @@
 package streamer
 
+import "fmt"
+
 // VideoDispatcher is a struct that represents a video dispatcher
 type VideoDispatcher struct {
 	WorkerPool chan chan VideoProcessingJob
@@ -17,6 +19,8 @@ type videoWorker struct {
 
 // newVideoWorker
 func newVideoWorker(id int, workerPool chan chan VideoProcessingJob) videoWorker {
+	fmt.Println("newVideoWorker: ", id)
+
 	return videoWorker{
 		id:         id,
 		jobQueue:   make(chan VideoProcessingJob),
@@ -26,6 +30,8 @@ func newVideoWorker(id int, workerPool chan chan VideoProcessingJob) videoWorker
 
 // Start() starts a worker
 func (w *videoWorker) start() {
+	fmt.Println("start worker: ", w.id)
+
 	go func() {
 		for {
 			// add worker to the worker pool
@@ -43,6 +49,8 @@ func (w *videoWorker) start() {
 
 // Run starts the video dispatcher
 func (d *VideoDispatcher) Run() {
+	fmt.Println("Run")
+
 	for i := 0; i < d.maxWorkers; i++ {
 		worker := newVideoWorker(i, d.WorkerPool)
 		worker.start()
@@ -52,6 +60,8 @@ func (d *VideoDispatcher) Run() {
 
 // dispatch()
 func (d *VideoDispatcher) dispatch() {
+	fmt.Println("dispatch")
+
 	for {
 		select {
 		case job := <-d.jobQueue:

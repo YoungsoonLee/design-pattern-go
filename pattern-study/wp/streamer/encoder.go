@@ -19,6 +19,8 @@ type VideoEncoder struct{}
 
 // EncodeToMP4 encodes a video to MP4
 func (ve *VideoEncoder) EncodeToMP4(v *Video, baseFileName string) error {
+	fmt.Println("EncodeToMP4", v.ID)
+
 	// Create a transcoder
 	trans := new(transcoder.Transcoder)
 
@@ -46,6 +48,8 @@ func (ve *VideoEncoder) EncodeToMP4(v *Video, baseFileName string) error {
 
 // EncodeToHLS encodes a video to HLS
 func (ve *VideoEncoder) EncodeToHLS(v *Video, baseFileName string) error {
+	fmt.Println("EncodeToHLS", v.ID)
+
 	// Create a channel to get results.
 	result := make(chan error)
 
